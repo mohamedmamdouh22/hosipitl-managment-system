@@ -1,0 +1,534 @@
+import builtins
+from tkinter import *
+from tkinter import messagebox
+from tkinter import ttk
+import sqlite3
+
+
+con = sqlite3.connect("hospital.db")
+cur = con.cursor()
+
+
+
+
+root = Tk()
+root.geometry("1400x800")
+root.title("HOSPITAL")
+root.resizable(width=False, height=False)
+
+#root.iconbitmap(r"F:\CPH1911\2nd et python project\icon.ico")
+class Start:
+    def __init__(self,root):
+        self.root = root
+
+        self.Start_frame = Frame(self.root,width=1400,height=800)
+        self.Start_frame.pack()
+        self.__welcome = Label(self.Start_frame,text="WELCOME",font=("Goudy Stout",40),fg="black").place(x=450,y=10)
+
+        # image main
+        self.__mainbackground = PhotoImage(file="backmain.PNG")
+        self.__mainbackground.subsample(5,5)  #size of image
+        self.__Labelmainbackground = Label(self.Start_frame,image=self.__mainbackground).place(x=250,y=100)
+        # button login
+        self.__logbutton = Button(self.Start_frame,text="LOG IN",bg="#68ece8",font=("Arial",30),fg="black", relief = RAISED, overrelief = SUNKEN,activebackground="#4dbedf",cursor="mouse",command=self.__login)
+        self.__logbutton.place(x=400,y=650)
+        # button exit
+        self.__exit = Button(self.Start_frame,text="EXIT",bg="#68ece8",font=("Arial",30),fg="black", relief = RAISED, overrelief = SUNKEN,activebackground="#4dbedf",cursor="mouse",command=quit)
+        self.__exit.place(x=850,y=650)
+
+    def __login(self):
+
+        self.Start_frame.pack_forget()
+        self.__framelogin = Frame(root, bg="white",width=500,height=800,highlightbackground='#888',highlightthickness=1)
+        self.__framelogin.place(x=500,y=0)
+
+        self.__loginphoto =PhotoImage(file="doctor.png")
+        self.__loginphoto1=self.__loginphoto.subsample(1,1)
+        self.__loginphotolabel = Label(self.__framelogin,image=self.__loginphoto1).place(x=150,y=20)
+
+        self.__lab1in = Label(self.__framelogin, text="User Name", font=('arial', 20),bg='white')
+        self.__lab1in.place(x=180, y=280)
+        self.ent1in = Entry(self.__framelogin, font=('arial', 20))
+        self.ent1in.place(x=90, y=320)
+        self.ent1in.focus()
+        self.__lab2in = Label(self.__framelogin, text="Password", font=('arial', 20),bg='white')
+        self.__lab2in.place(x=180, y=390)
+        self.ent2in = Entry(self.__framelogin, font=('arial', 20), show="*")
+        self.ent2in.place(x=90, y=430)
+        self.__butin = Button(self.__framelogin, text="LOG IN", font=('arial', 20),command=self.__check)
+        self.__butin.place(x=190, y=550)
+        self.__resetin = Button(self.__framelogin, text="EXIT", font=('arial', 20),command=quit)
+        self.__resetin.place(x=90, y=680)
+        self.__sign_in_ret = Button(self.__framelogin, text="RETURN", font=('arial', 20),cursor='exchange',command=self.__return_to_start)
+        self.__sign_in_ret.place(x=280, y=680)
+
+    def __return_to_start(self):
+        self.__framelogin.place_forget()
+        self.Start_frame.pack()
+
+
+
+
+
+
+
+
+    def __check(self):
+        cur.execute(f"select User_Name from Logins where User_Name = '{self.ent1in.get()}' ")
+        result_username = cur.fetchone()
+        if result_username == None:
+            messagebox.showerror("HOSPITAL","WRONG USER NAME")
+
+
+        elif result_username != None :
+            cur.execute(f"select Password from Logins where Password = {self.ent2in.get()}")
+            result_pass = cur.fetchone()
+            if result_pass == None:
+                messagebox.showerror("HOSPITAL","WRONG PASSWORD")
+
+            else :
+                messagebox.showinfo("HOSPITAL","WELCOME "+ self.ent1in.get())
+                self.__framelogin.place_forget()
+                person()
+
+
+class person():
+
+    def __init__(self):
+
+        self.main = Frame(root,width =1400,height=800)
+        self.main.place(x=0,y=0)
+        self.__upper=Frame(self.main,width=1400,height=90,bg='white')
+        self.__upper.place(x=0,y=0)
+        self.__pulse=PhotoImage(file='pulse.png')
+        self.__pulse_1=self.__pulse.subsample(3,3)
+        self.l_pulse=Label(self.__upper,image=self.__pulse_1,text='EL NOUR',compound=RIGHT,bg='white',fg='dark red',font=('Cooper Black',40)).place(x=10,y=10)
+        self.__side = Frame(self.main,width=350,height=500,bg="white",highlightbackground='#999',highlightthickness=1)
+        self.__side.place(x=10,y=150)
+        self.middle = Frame(self.main,width=1000,height=900,bg="#f1f1f1")
+        self.middle.place(x=320,y=90)
+        self.__pro = PhotoImage(file="doctor.png")
+        self.__profile = self.__pro.subsample(1,1)
+        self.__profile_label = Label(self.__side,image=self.__profile).place(x=40,y=20)
+        self.__user_label = Label(self.__side,text=ob.ent1in.get(),font=("arial",20))
+        self.__user_label.place(x=100,y=280)
+        self.__setting = Button(self.__side,text="Setting", font=("arial",20),command=self.setting).place(x=20,y=400)
+        self.__logout = Button(self.__side, text="Log out", font=("arial", 20),command=self.return_to_start).place(x=160, y=400)
+    
+        #middle fram
+        self.doc_i=PhotoImage(file='doc.png')
+        self.doc_img=self.doc_i.subsample(3,3)
+        self.__doctor=Button(self.middle,text='DOCTOR',bg='white', relief = RAISED, overrelief = SUNKEN,command=self.doctor,height=300,width=250,compound=TOP,image=self.doc_img,fg='black',borderwidth=3,font=('arial',20))
+        self.__doctor.place(x=50,y=50)
+        self.pat_i=PhotoImage(file='patent.png')
+        self.pat_img=self.pat_i.subsample(3,3)
+        self.__patent=Button(self.middle,text='PATIENT',bg='white', relief = RAISED, overrelief = SUNKEN,image=self.pat_img,height=300,width=250,compound=TOP,fg='black',borderwidth=3,font=('arial',20),command=self.patient)
+        self.__patent.place(x=380,y=50)
+        self.staff_i=PhotoImage(file='staff.png')
+        self.staff_img=self.staff_i.subsample(3,3)
+        self.__staff=Button(self.middle,image=self.staff_img,compound=TOP,text='STAFF',height=300,width=250, relief = RAISED, overrelief = SUNKEN,fg='black',bg='white',borderwidth=3,font=('arial',20))
+        self.__staff.place(x=700,y=50)
+        #lower icons
+        self.inst_i=PhotoImage(file='inst.png')
+        self.inst_img=self.inst_i.subsample(3,3)
+        self.__instrument=Button(self.middle,text='INSTRUMENTS',bg='white',height=300,width=250,compound=TOP, relief = RAISED, overrelief = SUNKEN,image=self.inst_img,fg='black',borderwidth=3,font=('arial',20))
+        self.__instrument.place(x=50,y=400)
+        self.nurse_i=PhotoImage(file='nurse.png')
+        self.nurse_img=self.nurse_i.subsample(3,3)
+        self.__nurse=Button(self.middle,text='NURSES',bg='white',image=self.nurse_img,height=300,width=250,compound=TOP, relief = RAISED, overrelief = SUNKEN,fg='black',borderwidth=3,font=('arial',20))
+        self.__nurse.place(x=380,y=400)
+        self.medical_i=PhotoImage(file='medical.png')
+        self.medical_img=self.medical_i.subsample(3,3)
+        self.__medical=Button(self.middle,image=self.medical_img,compound=TOP,text='MEDICAL STORE', relief = RAISED, overrelief = SUNKEN,height=300,width=250,fg='black',bg='white',borderwidth=3,font=('arial',15))
+        self.__medical.place(x=700,y=400)
+
+
+    def return_to_start(self):
+        self.main.place_forget()
+        self.__side.place_forget()
+        ob.Start_frame.pack()
+    def doctor(self):
+        doctor()
+
+    def patient(self):
+        patient()
+
+    def setting(self):
+        self.middle.place_forget()
+        
+        self.setting_frame = Frame(self.main,width=950,height=700,bg="#f1f1f1")
+        self.setting_frame.place(x=370,y=100)
+        self.username_label = Label(self.setting_frame,text="USER NAME",font=("arial",20)).place(x=130,y=80)
+        self.username_entry = Entry(self.setting_frame,font=("arial",20),borderwidth=2)
+        self.username_entry.place(x=130,y=130)
+        self.username_entry.focus()
+
+        self.pass_label = Label(self.setting_frame, text="PASSWORD", font=("arial", 20)).place(x=130, y=200)
+        self.pass_entry = Entry(self.setting_frame, font=("arial", 20),borderwidth=2)
+        self.pass_entry.place(x=130, y=250)
+        self.submit = Button(self.setting_frame, text="SUBMIT", font=("arial", 20),borderwidth=2,command=self.change).place(x=250,y=300)
+    def change(self):
+        cur.execute(f"update logins set user_name ='{self.username_entry.get()}' where user_name = '{ob.ent1in.get()}' ")
+        cur.execute(f"update logins set password ={self.pass_entry.get()} where password = {ob.ent2in.get()} ")
+        con.commit()
+        messagebox.showinfo("HOSPITAL","OK")
+        self.__user_label.place_forget()
+        self.new_label = Label(self.__side,text=self.username_entry.get(),font=("arial", 20))
+        self.new_label.place(x=100,y=280)
+        self.setting_frame.place_forget()
+        self.middle.place(x=320,y=90)
+        #self.__upper.pack()
+    #add new person
+    def add(self):
+        self.new_fram=Frame(self.main,width=1000,height=800,bg="#f1f1f1")
+        self.new_fram.place(x=320,y=90)
+        self.middle.place_forget()
+        self.add_person=Frame(self.new_fram,width=1000,highlightbackground="#cc0000", highlightthickness=3,height=800)
+        self.add_person.place(x=50,y=90)
+        self.add_name=Label(self.add_person,text='Name',font=('times',20))
+        self.add_name.place(x=20,y=20)
+        self.add_entery_n=Entry(self.add_person,font=('times',20),borderwidth=2)
+        self.add_entery_n.place(x=20,y=90)
+        self.add_age=Label(self.add_person,text='Age',font=('times',20))
+        self.add_age.place(x=20,y=150)
+        self.add_entery_a=Entry(self.add_person,font=('times',20),borderwidth=2)
+        self.add_entery_a.place(x=20,y=220)
+        
+    def search(self):
+
+        self.search_frame=Frame(self.main,width=1000,height=700)
+        self.search_frame.place(x=320,y=90)
+        self.middle.place_forget()
+        self.search_id=Frame(self.search_frame,width=1000,height=700)
+        self.search_id.place(x=20,y=90)
+        self.id=Label(self.search_id,text='ID',font=('Cambria',20))
+        self.id.place(x=20,y=10)
+        self.id_entery=Entry(self.search_id,borderwidth=2,font=('times',20))
+        self.id_entery.place(x=20,y=70)
+        self.search_butt=Button(self.search_id,text='Search',font=('times',15),borderwidth=2,command=self.get_info)
+        self.search_butt.place(x=350,y=65)
+    def get_info(self):
+
+        self.fetch_frame = Frame(self.search_id,width=1000,height=500,bg="#eec4ce",highlightbackground="#cc0000", highlightthickness=3)
+        self.fetch_frame.place(x=0,y=150)
+        self.display_name=Label(self.fetch_frame,text='NAME',font=('times',20),width=10)
+        self.display_name.place(x=30,y=80)
+        self.display_age=Label(self.fetch_frame,text='AGE',font=('times',20),width=10)
+        self.display_age.place(x=30,y=140)
+
+    def update_info(self):
+        self.update_frame=Frame(self.main,width=1000,height=800,bg="#f1f1f1")
+        self.update_frame.place(x=320,y=90)
+        self.middle.place_forget()
+        #self.update_frame1=Frame(self.update_frame,width=1000,height=800)
+        #self.update_frame1.place(x=20,y=90)
+        self.id_update=Label(self.update_frame,text='ID',font=('Cambria',20))
+        self.id_update.place(x=20,y=90)
+        self.id_entery_update=Entry(self.update_frame,borderwidth=2,font=('times',20))
+        self.id_entery_update.place(x=20,y=150)
+
+    def update_with_date(self):
+        self.correct_id_frame = Frame(self.update_frame, width=1000, height=800)
+        self.correct_id_frame.place(x=20, y=200)
+        self.labeltit = Label(self.update_frame, text="CHOOSE TO UPDATE", font=("Forte", 30), fg="black")
+        self.labeltit.place(x=300,y=230)
+
+        self.button_update_name = Button(self.correct_id_frame, text="NAME", relief=RAISED, overrelief=SUNKEN,
+                                         bg="#1fc585", font=("Arial", 30),command=self.update_name)
+        self.button_update_name.place(x=250, y=140)
+
+        self.button_update_age = Button(self.correct_id_frame, text="AGE", relief=RAISED, overrelief=SUNKEN,command=self.update_age,
+                                         bg="#1fc585", font=("Arial", 30))
+        self.button_update_age.place(x=550, y=140)
+
+
+        self.button_update_salary = Button(self.correct_id_frame, text="SALARY", relief=RAISED, overrelief=SUNKEN,
+                                           command=self.update_salary,
+                                           bg="#1fc585", font=("Arial", 30))
+        self.button_update_salary.place(x=120, y=300)
+
+        self.button_update_major = Button(self.correct_id_frame, text="MAJOR", relief=RAISED, overrelief=SUNKEN,
+                                          command=self.update_major,
+                                          bg="#1fc585", font=("Arial", 30))
+        self.button_update_major.place(x=400, y=300)
+        self.button_update_return = Button(self.correct_id_frame, text="RETURN", relief=RAISED, overrelief=SUNKEN,command=self.out_of_edit,
+                                           bg="#1fc585", font=("Arial", 30))
+        self.button_update_return.place(x=680, y=300)
+
+    def out_of_edit(self):
+        self.update_frame.place_forget()
+        self.doc_frame.place(x=500, y=90)
+
+
+
+    def update_name(self):
+        self.correct_id_frame.place_forget()
+        self.labeltit.place_forget()
+        self.correct_frame = Frame(self.update_frame, width=1000, height=800)
+        self.correct_frame.place(x=20, y=200)
+        self._up_name_label = Label(self.correct_frame, text="ENTER NEW NAME", font=("Arial", 20)).place(x=20, y=100)
+        self._up_name_entry = Entry(self.correct_frame, font=("Arial", 20))
+        self._up_name_entry.place(x=300, y=100)
+        self._up_name_button = Button(self.correct_frame, text="SUBMIT", font=("Arial", 30), relief=RAISED,command=self.save_name,
+                                      overrelief=SUNKEN, bg="#1fc585")
+        self._up_name_button.place(x=400, y=300)
+
+
+
+    def update_age(self):
+        self.correct_id_frame.place_forget()
+        self.labeltit.place_forget()
+        self.correct_frame = Frame(self.update_frame, width=1000, height=800)
+        self.correct_frame.place(x=20, y=200)
+        self._up_age_label = Label(self.correct_frame, text="ENTER NEW AGE", font=("Arial", 20)).place(x=20, y=100)
+        self._up_age_entry = Entry(self.correct_frame, font=("Arial", 20))
+        self._up_age_entry.place(x=300, y=100)
+        self._up_age_button = Button(self.correct_frame, text="SUBMIT", font=("Arial", 30), relief=RAISED,command=self.save_age,
+                                    overrelief=SUNKEN, bg="#1fc585")
+        self._up_age_button.place(x=400, y=300)
+
+    def update_salary(self):
+        self.correct_id_frame.place_forget()
+        self.labeltit.place_forget()
+        self.correct_frame = Frame(self.update_frame, width=1000, height=800)
+        self.correct_frame.place(x=20, y=200)
+        self._up_salary_label = Label(self.correct_frame, text="ENTER NEW SALARY ", font=("Arial", 20)).place(x=20,
+                                                                                                             y=100)
+        self._up_salary_entry = Entry(self.correct_frame, font=("Arial", 20))
+        self._up_salary_entry.place(x=310, y=100)
+        self._up_salary_button = Button(self.correct_frame, text="SUBMIT", font=("Arial", 30), relief=RAISED,command=self.save_salary,
+                                        overrelief=SUNKEN, bg="#1fc585")
+        self._up_salary_button.place(x=400, y=300)
+
+
+
+    def update_major(self):
+        self.correct_id_frame.place_forget()
+        self.labeltit.place_forget()
+        self.correct_frame = Frame(self.update_frame, width=1000, height=800)
+        self.correct_frame.place(x=20, y=200)
+        self._up_major_label = Label(self.correct_frame, text="ENTER NEW MAJOR", font=("Arial", 20)).place(x=20, y=100)
+        self._up_major_entry = Entry(self.correct_frame, font=("Arial", 20))
+        self._up_major_entry.place(x=300, y=100)
+        self._up_major_button = Button(self.correct_frame, text="SUBMIT", font=("Arial", 30), relief=RAISED,command=self.save_major,
+                                      overrelief=SUNKEN, bg="#1fc585")
+        self._up_major_button.place(x=400, y=300)
+
+    def delete(self):
+        self.delete_frame=Frame(self.main,width=1000,height=800,bg="#f1f1f1")
+        self.delete_frame.place(x=320,y=90)
+        self.middle.place_forget()
+        self.delete_id=Frame(self.delete_frame,width=1000,height=900)
+        self.delete_id.place(x=20,y=90)
+        self.id_delete=Label(self.delete_id,text='ID',font=('Cambria',20))
+        self.id_delete.place(x=20,y=90)
+        self.id_delete_update=Entry(self.delete_id,borderwidth=2,font=('times',20))
+        self.id_delete_update.place(x=20,y=150)
+        self.delete_butt=Button(self.delete_id,text='DELETE',font=('times',15),borderwidth=2,command=self.msg)
+        self.delete_butt.place(x=350,y=145)
+    def msg(self):
+        messagebox.showinfo("HOSPITAL","DELETED SUCCESSFULLY")
+#doctor class        
+class doctor(person):
+    def __init__(self):
+        super().__init__()
+        self.middle.place_forget()
+        self.doc_frame=Frame(self.main,height=800,width=1000)
+        self.doc_frame.place(x=500,y=90)
+        #add button
+        self.add_i=PhotoImage(file='add.png')
+        self.add_img=self.add_i.subsample(3,3)
+        self.__add=Button(self.doc_frame,text='ADD',bg='white',height=300,fg='green',width=250,compound=TOP,cursor = 'cross', bd = 3 , relief = RAISED, overrelief = SUNKEN,image=self.add_img,borderwidth=3,font=('arial',20),command=self.add)
+        self.__add.place(x=50,y=50)
+        #search button
+        self.search_i=PhotoImage(file='search.png')
+        self.search_img=self.search_i.subsample(3,3)
+        self.__search=Button(self.doc_frame,text='SEARCH',bg='white',height=300,width=250,compound=TOP,image=self.search_img, relief = RAISED, overrelief = SUNKEN,fg='sky blue',borderwidth=3,font=('arial',20),command=self.search)
+        self.__search.place(x=450,y=50)
+        #edit button
+        self.edit_i=PhotoImage(file='edit.png')
+        self.edit_img=self.edit_i.subsample(3,3)
+        self.__edit=Button(self.doc_frame,text='EDIT',bg='white',command=self.update_info,height=300,width=250,compound=TOP, relief = RAISED, overrelief = SUNKEN,image=self.edit_img,fg='grey',borderwidth=3,font=('arial',20))
+        self.__edit.place(x=50,y=400)
+        #delet button
+        self.delete_i=PhotoImage(file='delete.png')
+        self.delete_img=self.delete_i.subsample(3,3)
+        self.__delete=Button(self.doc_frame,text='DELETE',bg='white',fg='red',command=self.delete,height=300,width=250, relief = RAISED, overrelief = SUNKEN,compound=TOP,image=self.delete_img,borderwidth=3,font=('arial',20))
+        self.__delete.place(x=450,y=400)
+        #return button
+
+        #add new doctor to database
+    def add(self):
+        super().add()
+        self.add_label = Label(self.new_fram,text="ADD DOCTOR",font=("Forte",30),fg="black").place(x=100,y=20)
+        self.add_salary=Label(self.add_person,text='Salary',font=('times',20))
+        self.add_salary.place(x=20,y=290)
+        self.add_entery_s=Entry(self.add_person,font=('times',20),borderwidth=2)
+        self.add_entery_s.place(x=20,y=350)
+        self.add_major=Label(self.add_person,text='Major',font=('times',20))
+        self.add_major.place(x=20,y=420)
+        self.add_entery_m=Entry(self.add_person,font=('times',20),borderwidth=2)
+        self.add_entery_m.place(x=20,y=490)
+        self.add_button=Button(self.add_person,text='Add',font=('times',20),command=self.submit)
+        self.add_button.place(x=20,y=550)
+
+    def submit(self):
+        if(self.add_entery_n.get() and self.add_entery_a.get() and self.add_entery_s.get() and self.add_entery_m.get()):
+            messagebox.showinfo('hospital'.upper(),'Doctor added successfully')
+            name=self.add_entery_n.get()
+            age=self.add_entery_a.get()
+            salary=self.add_entery_s.get()
+            major=self.add_entery_m.get()
+            cur.execute(f"INSERT INTO doctors (name,age,salary,major) VALUES ('{name}',{age},{salary}, '{major}')")
+            con.commit()
+            self.add_person.place_forget()
+            self.new_fram.place_forget()
+            self.doc_frame.place(x=500,y=90)
+
+        else:
+            messagebox.showerror('hospital'.upper(),'please,fill all inputs')
+
+    def search(self):
+
+        super().search()
+
+
+    def get_info(self):
+
+
+        cur.execute(f"select id from doctors where id = {self.id_entery.get()} ")
+        result = cur.fetchone()
+        if result:
+            cur.execute(f"select * from doctors where id = {self.id_entery.get()}")
+            name, age, id, salary, major = cur.fetchone()
+
+            super(doctor, self).get_info()
+            self.fetch_doctor_name = Label(self.fetch_frame, text=name, font=("times", 20),width=10,)
+            self.fetch_doctor_name.place(x=220, y=80)
+            self.fetch_doctor_age = Label(self.fetch_frame,text=age,font=("times",20),width=10).place(x=220,y=140)
+            self.display_id =Label(self.fetch_frame,text="ID",font=("times",20),width=10).place(x=30,y=200)
+            self.fetch_doctor_id = Label(self.fetch_frame,text=id,font=("times",20),width=10).place(x=220,y=200)
+            self.fetch_doctor_salary = Label(self.fetch_frame,text=salary,font=("times",20),width=10).place(x=220,y=260)
+            self.display_salary = Label(self.fetch_frame, text="SALARY", font=("times", 20),width=10).place(x=30, y=260)
+            self.fetch_doctor_major = Label(self.fetch_frame,text=major,font=("times",20),width=10).place(x=220,y=320)
+            self.display_major =Label(self.fetch_frame,text="MAJOR",font=("times",20),width=10).place(x=30,y=320)
+
+            self.return_doctor = Button(self.fetch_frame,text="RETURN",font=("Algerian",20),command=self.return_doctor_fun)
+            self.return_doctor.place(x=600,y=100)
+            self.search_doctor = Button(self.fetch_frame, text="SEARCH AGAIN", font=("Algerian", 20),
+                                        command=self.search_again)
+            self.search_doctor.place(x=600, y=200)
+
+        else:
+
+            messagebox.showerror('hospital'.upper(), 'ERROR INPUT')
+
+    def search_again(self):
+        self.fetch_frame.place_forget()
+        self.search()
+
+    def return_doctor_fun(self):
+        self.search_id.place_forget()
+        self.search_frame.place_forget()
+
+        self.doc_frame.place(x=500,y=90)
+
+
+    def update_info(self):
+        super().update_info()
+        self.update_butt = Button(self.update_frame, text='Search', font=('times', 15), borderwidth=2, command=self.update_with_date)
+        self.update_butt.place(x=350, y=140)
+    def update_with_data(self):
+        cur.execute(f"select id from doctors where id = {self.id_entery_update.get()} ")
+        result = cur.fetchone()
+        if result:
+            super().update_with_date()
+
+        else:
+            messagebox.showerror('hospital'.upper(), 'ERROR INPUT')
+
+    def update_name(self):
+        super().update_name()
+
+    def save_name(self):
+        cur.execute(
+            f"update doctors set name= '{self._up_name_entry.get()}'where id = {self.id_entery_update.get()} ")
+        con.commit()
+        self.correct_frame.place_forget()
+        self.correct_id_frame.place(x=20, y=200)
+        self.labeltit.place(x=300,y=230)
+
+    def update_age(self):
+        super().update_age()
+    def save_age(self):
+        cur.execute(
+            f"update doctors set age= {self._up_age_entry.get()} where id = {self.id_entery_update.get()} ")
+        con.commit()
+        self.correct_frame.place_forget()
+        self.correct_id_frame.place(x=20, y=200)
+        self.labeltit.place(x=300, y=230)
+
+
+
+    def update_major(self):
+        super().update_major()
+    def save_major(self):
+        cur.execute(
+            f"update doctors set major= '{self._up_major_entry.get()}' where id = {self.id_entery_update.get()} ")
+        con.commit()
+        self.correct_frame.place_forget()
+        self.correct_id_frame.place(x=20, y=200)
+        self.labeltit.place(x=300, y=230)
+
+    def update_salary(self):
+        super().update_salary()
+    def save_salary(self):
+        cur.execute(
+            f"update doctors set salary= {self._up_salary_entry.get()} where id = {self.id_entery_update.get()} ")
+        con.commit()
+        self.correct_frame.place_forget()
+        self.correct_id_frame.place(x=20, y=200)
+        self.labeltit.place(x=300, y=230)
+
+
+
+
+
+
+
+
+
+    def delete(self):
+        super().delete()
+
+    def msg(self):
+        cur.execute(f"select id from doctors where id = {self.id_delete_update.get()} ")
+        result = cur.fetchone()
+        if result:
+            cur.execute(f"delete from doctors where Id={self.id_delete_update.get()}")
+            con.commit()
+            super().msg()
+            self.delete_id.place_forget()
+            self.delete_frame.place_forget()
+            self.doc_frame.place(x=500, y=90)
+
+        else:
+            messagebox.showerror('hospital'.upper(), 'ERROR INPUT')
+            self.delete_id.place_forget()
+            self.delete_frame.place_forget()
+            self.doc_frame.place(x=500, y=90)
+
+class patient(doctor,person):
+    def __init__(self):
+        person().__init__()
+        doctor().__init__()
+
+
+
+
+
+ob = Start(root)
+
+root.mainloop()
+
+con.close()
